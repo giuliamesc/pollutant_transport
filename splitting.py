@@ -18,7 +18,7 @@ def entrance(x,y,r,R):
 # Parameters
 X0 = 7.0
 Y0 = 7.0
-dt = 1e-2 # temporal step
+dt = 1e-3 # temporal step
 T = 1
 sigma = 2
 Q = 1
@@ -36,11 +36,14 @@ def u2(x,y):
     return Q*y/(2*np.pi*(np.power(x,2)+np.power(y,2)))
 
 
-R = np.arange(8.5,0.5,-1.5) # vector of external radius of my circular crowns
-r = R-1.5 
+R = np.arange(8.5,0.5,-2.5) # vector of external radius of my circular crowns
+r = R-2.5 
 r[-1] = 0 # vector of internal radius of my circular crowns
 P = np.zeros(len(R)) # vector to store the probabilities P(tau_j <= T | tau_(j-1) <= T)
-iters = 100*np.ones(len(R)) # number of subpaths studied inside each circular crown
+P_trials = [0.2,0.1,0.1,0.1]
+
+iters = 2*np.ones(len(R))/P_trials # number of subpaths studied inside each circular crown
+#iters = 10*np.ones(len(R))
 
 def rw(K,X0,Y0,r,R):
     
@@ -83,7 +86,10 @@ Y0s_old = [Y0]
 start = time.time()
 
 for j in range(len(R)): # for each level
+    print("Level: ", j)
     K_r = int(iters[j])
+    print("Iterations to perform: ", K_r)
+    print("Number of valid starting points: ", len(X0s_old))
     X0s_new = []
     Y0s_new = []
     for n in range(len(X0s_old)): # for each initial point of the previous state
@@ -98,6 +104,7 @@ for j in range(len(R)): # for each level
                 X0s_new.append(xs[-1]) # store new intial point for next state
                 Y0s_new.append(ys[-1])
                 P[j] = P[j] + 1
+    print("Number of points in the smaller circle found: ", len(X0s_new))            
     P[j] = P[j] / (K_r * len(X0s_old))
     X0s_old = X0s_new
     Y0s_old = Y0s_new
