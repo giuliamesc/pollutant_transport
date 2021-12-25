@@ -8,10 +8,10 @@ Created on Fri Dec 24 16:57:16 2021
 # Parameters file
 
 # Starting point
-X0 = 2.5
-Y0 = 2.5
+X0 = 6.0
+Y0 = 6.0
 # Plot limits
-xl = 4
-yl = 4
+xl = 10
+yl = 10
 # Temporal step
-dt = 0.1*1e-3
+dt = 1e-2

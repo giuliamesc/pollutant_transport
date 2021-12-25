@@ -8,6 +8,7 @@ Created on Fri Dec 24 16:10:12 2021
 import numpy as np
 import matplotlib.pyplot as plt
 import parameters
+import time
 
 # Options
 r = 1.0
@@ -17,7 +18,7 @@ T = 1
 sigma = 2
 Q = 1
 
-N = 10000 # number of simulations
+N = 1000000 # number of simulations
 count = 0
 
 maxit = int(T/dt)
@@ -37,7 +38,7 @@ def killing_boundary(x,y):
     # This function receives the coordinate of a point and returns true if that coordinate is inside the well
     if(np.sqrt(np.power(x,2)+np.power(y,2)) <= 1) : return True
     else: return False
-
+start = time.time()
 for i in range(N): 
     # Starting value
     X0 = parameters.X0
@@ -65,7 +66,8 @@ for i in range(N):
         if (it > maxit) : stop = True
         X0 = new_X
         Y0 = new_Y
-    
+end = time.time()
+print("Simulation time: ", end - start, "s; in minutes: ",(end-start)/60) 
 ax = plt.gca()
 circle1 = plt.Circle((0, 0), r, color='darkturquoise', fill = True)  
 ax.plot(X,Y,'lightsteelblue')
