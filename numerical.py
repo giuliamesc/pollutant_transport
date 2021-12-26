@@ -112,9 +112,9 @@ for i in range(1, len(times)):
         - df.Constant(sigma**2/2) * df.inner(df.grad(phi), df.grad(v)) 
         + (u1*phi.dx(0)+u2*phi.dx(1))*v
         )*df.dx
-    rhs = df.inner(phi_old,v)/df.Constant(dt)*df.dx
-    #solve(a == rhs, phi_old, bcs=bcs)
-    solve(a == rhs, phi_old, bcs = [])
+    rhs = phi_old*v/df.Constant(dt)*df.dx
+    solve(a == rhs, phi_old, bcs=bcs)
+    #solve(a == rhs, phi_old, bcs = [])
     save_output(phi_old, t, i)
 
     
