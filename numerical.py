@@ -11,21 +11,23 @@ import numpy as np
 from dolfin import *
 from mshr import *
 import matplotlib.pyplot as plt
-
+# import ffc
+# print(ffc.supported_elements)
 # Options
 r = 1.0
-R = 5.0
-dt  = 1e-1
+R = 50.0
+dt  = 1e-3
 T = 1
 sigma = 2
-X0 = 2.5
-Y0 = 2.5
+X0 = 3.0
+Y0 = 4.0
 
-tol = 1e-2
+tol_int = 0.15
+tol_ext = 1e-2
 
 # Mesh Generation
 domain = Circle(df.Point(0, 0), R) - Circle(df.Point(0,0), r)
-mesh = generate_mesh(domain, 64)
+mesh = generate_mesh(domain, 200)
 mesh_points=mesh.coordinates()
 xm=mesh_points[:,0]
 ym=mesh_points[:,1]
@@ -53,22 +55,22 @@ def save_output(u, t, it):
     xdmf_file.parameters['rewrite_function_mesh'] = False
     xdmf_file.write(u, t)
     
-V = df.FunctionSpace(mesh,"CG",1)
+V = df.FunctionSpace(mesh,"Lagrange",1)
 
 # BC
 bcs = list()
   
 
-def my_well(x):
+def my_well(x,on_boundary):
         rad = np.sqrt(np.power(x[0],2)+np.power(x[1],2))
-        return (np.abs(rad - r) < tol)
+        return on_boundary and (np.abs(rad - r) < tol_int)
     
-def my_out(x):
+def my_out(x,on_boundary):
         rad = np.sqrt(np.power(x[0],2)+np.power(x[1],2))
-        return (np.abs(rad - R) < tol)
+        return on_boundary and (np.abs(rad - R) < tol_ext)
 
 bcs.append(df.DirichletBC(V, df.Constant(1), my_well))
-bcs.append(df.DirichletBC(V, df.Constant(1), my_out))
+bcs.append(df.DirichletBC(V, df.Constant(0), my_out))
 
 # Test and Trial Space
 # Test and Trial Functions in the bilinear form
@@ -99,20 +101,21 @@ times = np.arange(T, -0.01, step = -dt)
 times[-1] = 0
 phi_old = interpolate(df.Constant(0),V) # initial condition
 
-save_output(phi_old, 0, 0)
+save_output(phi_old, T, 0)
 
 
 for i in range(1, len(times)):
     t = times[i]
-    print('*** Solving time t = %1.6f ***' % t)
+    if(np.mod(i,10)==0):
+        print('*** Solving time t = %1.6f ***' % t)
     
     # Bilinear form
     a = (
-        phi*v / df.Constant(dt) 
-        - df.Constant(sigma**2/2) * df.inner(df.grad(phi), df.grad(v)) 
+        (phi*v) / df.Constant(dt) 
+        - df.Constant(sigma**2/2) * (df.div(df.grad(phi))*v) 
         + (u1*phi.dx(0)+u2*phi.dx(1))*v
         )*df.dx
-    rhs = phi_old*v/df.Constant(dt)*df.dx
+    rhs = ((phi_old*v)/df.Constant(dt))*df.dx
     solve(a == rhs, phi_old, bcs=bcs)
     #solve(a == rhs, phi_old, bcs = [])
     save_output(phi_old, t, i)
