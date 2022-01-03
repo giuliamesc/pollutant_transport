@@ -15,7 +15,7 @@ import parameters
 # Options and parameters
 N=10000 # Number of samples
 N2=int(N/2) # Number of samples for AV
-dt = 1e-2
+dt = parameters.dt
 T = 1
 Q = 1
 sigma = 2
@@ -24,6 +24,7 @@ K = int(T/dt) # iteration corresponding to the desired stopping time
 alpha = 0.05
 C_alpha=st.norm.ppf(1-alpha/2)
 
+np.random.seed(21)
 # Vectors for storage
 Z_mc=np.zeros(N)
 Z_mc2=np.zeros(N2)

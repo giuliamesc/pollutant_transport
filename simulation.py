@@ -18,7 +18,7 @@ T = 1
 sigma = 2
 Q = 1
 
-N = 1000000 # number of simulations
+N = 10000 # number of simulations
 count = 0
 
 maxit = int(T/dt)
@@ -70,10 +70,18 @@ end = time.time()
 print("Simulation time: ", end - start, "s; in minutes: ",(end-start)/60) 
 ax = plt.gca()
 circle1 = plt.Circle((0, 0), r, color='darkturquoise', fill = True)  
-ax.plot(X,Y,'lightsteelblue')
+circle2 = plt.Circle((0, 0), 2, color='darkturquoise', fill = False) 
+circle3 = plt.Circle((0, 0), 3, color='darkturquoise', fill = False) 
+circle4 = plt.Circle((0, 0), 4, color='darkturquoise', fill = False) 
+circle5 = plt.Circle((0, 0), 5, color='darkturquoise', fill = False) 
+ax.plot(X,Y,'forestgreen', linewidth = 0.5)
 ax.plot(X[0],Y[0],'bo')
 ax.plot(X[-1],Y[-1], 'ro')
 ax.add_patch(circle1)
+ax.add_patch(circle2)
+ax.add_patch(circle3)
+ax.add_patch(circle4)
+ax.add_patch(circle5)
 plt.xlim(-parameters.xl,parameters.xl)
 plt.ylim(-parameters.yl,parameters.yl)
 ax.set_aspect('equal', adjustable='box')
