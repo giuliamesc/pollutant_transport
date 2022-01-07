@@ -59,21 +59,33 @@ def rw(K,X0,Y0,R):
             finished=1
             break; # exit from the for loop
            
-    return finished,x_new,y_new,len(xs)
+    return finished,x_new,y_new,len(xs),xs,ys
 
-R = [7,5,3,1] # vector of radius
+R = [7,6,5,4,3,2,1] # vector of radius
 P = np.zeros(len(R)) # vector to store probabilities
 #iters = [100,100,100,100,100,100,100] # vector of iterations to perform for each level (TRIAL)
-P_trials = [0.08,0.04875,0.01564103,0.00704918]
-iters = 2*np.ones(len(R))/P_trials
-iters = [25,50,150,300]
+#P_trials = [0.08,0.04875,0.01564103,0.00704918]
+#iters = 2*np.ones(len(R))/P_trials
+iters = [100,4,5,10,10,14,20]
 X_start = [X0]
 Y_start = [Y0]
 
 np.random.seed(21)
 
 times = [0] # to store after how many steps we hit the inner ball
-
+# ax = plt.gca()
+# circle1 = plt.Circle((0, 0), 1, color='darkturquoise', fill = True)  
+# circle2 = plt.Circle((0, 0), 3, color='darkturquoise', fill = False) 
+# circle3 = plt.Circle((0, 0), 5, color='darkturquoise', fill = False) 
+# circle4 = plt.Circle((0, 0), 7, color='darkturquoise', fill = False) 
+# ax.plot(X0,Y0,'bo')
+# ax.add_patch(circle1)
+# ax.add_patch(circle2)
+# ax.add_patch(circle3)
+# ax.add_patch(circle4)
+# plt.xlim(-10,10)
+# plt.ylim(-10,10)
+# ax.set_aspect('equal', adjustable='box')
 for i in range(len(R)): # for each level
     print("Level: ", i)
     its = int(iters[i]) # get how many iterations to perform for each valid starting point
@@ -87,13 +99,15 @@ for i in range(len(R)): # for each level
         t_old = times[j] # time employed to reach the current starting point
         # print('Times old: ', times[j])
         for k in range(its): 
-            finished,x_new,y_new,temp_t = rw(K,X_start[j],Y_start[j],R[i]) # generate its time a trajectory starting from my starting point
+            finished,x_new,y_new,temp_t,x,y = rw(K,X_start[j],Y_start[j],R[i]) # generate its time a trajectory starting from my starting point
             t_new = temp_t + t_old 
             if finished == 1 and t_new <= K :
                 X_new.append(x_new) # store the new initial position
                 Y_new.append(y_new)
                 times_new.append(t_new)
-                P[i] = P[i] + 1 # update counter           
+                P[i] = P[i] + 1 # update counter   
+                # ax.plot(x,y, linewidth = 0.5)
+                # ax.plot(x_new,y_new, 'ro')
     print('Number of hits: ', int(P[i]))            
     P[i] = P[i]/den # count the fraction of successes
     X_start = np.copy(X_new) # valid ending points become the new starting points
