@@ -28,7 +28,7 @@ Q = 1
 alpha = 0.05
 C_alpha=scipy.stats.norm.ppf(1-alpha/2)
 
-N = 10000 # pilot run
+N = 10000 # set N
 
 maxit = int(T/dt)
 
@@ -93,8 +93,8 @@ mu, X_fine, Y_fine, X_coarse, Y_coarse, Z_mc = path(N)
 
 sigma = np.var(Z_mc)
 
-print('Variance with old N: ', sigma)
-print('Extimated probability with old N: ', mu)
+print('Variance: ', sigma)
+print('Extimated probability: ', mu)
 
 print('Confidence Interval: [', mu, '+-', C_alpha * np.sqrt(sigma)/np.sqrt(N),']')
 
@@ -142,6 +142,7 @@ plt.ylim(-parameters.yl,parameters.yl)
 ax2.set_aspect('equal', adjustable='box')
 
 X_coarse_new = np.zeros(len(X_fine))
+Y_coarse_new = np.zeros(len(Y_fine))
 
 for i in range(len(X_fine)):
     if np.mod(i,2)==0:
@@ -150,3 +151,14 @@ for i in range(len(X_fine)):
     else:
         X_coarse_new[i] = 0.5 * (X_fine[i-1] + X_fine[i+1])
         Y_coarse_new[i] = 0.5 * (Y_fine[i-1] + Y_fine[i+1])
+        
+err_inf_X = np.max(np.abs(X_coarse_new-X_fine))
+err_inf_Y = np.max(np.abs(Y_coarse_new-Y_fine))
+
+print('Error on x: ', err_inf_X)
+print('Error on y: ', err_inf_Y)
+
+rad = np.sqrt(parameters.X0**2+parameters.Y0**2)
+print('Normalized error on x: ', err_inf_X/rad)
+print('Normalized error on y: ', err_inf_Y/rad)
+
