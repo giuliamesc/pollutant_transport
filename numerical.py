@@ -14,19 +14,19 @@ import matplotlib.pyplot as plt
 
 # Options
 r = 1.0
-R = 50.0
+R = 20.0
 dt  = 1e-2
 T = 1
 sigma = 2
-X0 = 2.5
-Y0 = 2.5
+X0 = 7
+Y0 = 7
 Q = 1
 
 tol_int = 1.0
 tol_ext = 1e-1
 
 domain = mshr.Circle(df.Point(0, 0), R) - mshr.Circle(df.Point(0,0), r)
-mesh = mshr.generate_mesh(domain,200)
+mesh = mshr.generate_mesh(domain,100)
 
 # Importing the Mesh in GMSH for visualization
 xdmf = df.XDMFFile("mesh.xdmf")
