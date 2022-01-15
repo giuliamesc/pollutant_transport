@@ -350,7 +350,7 @@ def res_path(N):
 
 if task == 'order':
     
-    N = 10000 # Numer of replicas
+    N = 100000 # Numer of replicas
     mu_hat_fff, Z_mc_hat_fff, mu_hat_ff, Z_mc_hat_ff, mu_hat_f, Z_mc_hat_f, mu_hat_c, Z_mc_hat_c = res_path(N) # running N paths
     
     end = time.time()
