@@ -6,10 +6,7 @@ Created on Fri Dec 24 16:57:16 2021
 """
 
 # Parameters file
-testcase = 2
-
-# Temporal step
-dt = 1e-2
+testcase = 1
 
 if testcase == 1:
     # Starting point
@@ -18,6 +15,8 @@ if testcase == 1:
     # Plot limits
     xl = 3
     yl = 3
+    #Tolerance
+    tol = 1e-2
 
 if testcase == 2:
     # Starting point
@@ -26,6 +25,8 @@ if testcase == 2:
     # Plot limits
     xl = 5.5
     yl = 5.5
+    #Tolerance
+    tol = 5e-3
 
 if testcase == 3:
     # Starting point
@@ -34,6 +35,8 @@ if testcase == 3:
     # Plot limits
     xl = 7
     yl = 7
+    # Tolerance
+    tol = 1e-4
     
 if testcase == 4:
     # Starting point
@@ -42,6 +45,8 @@ if testcase == 4:
     # Plot limits
     xl = 3
     yl = 3
+    # Tolerance
+    tol = 1e-4
     
 if testcase == 5:
     # Starting point
@@ -50,3 +55,5 @@ if testcase == 5:
     # Plot limits
     xl = 10
     yl = 10
+    # Tolerance
+    tol = 1e-1 # we need to specify a value to make the simulation script run; the output will always be 0.0
