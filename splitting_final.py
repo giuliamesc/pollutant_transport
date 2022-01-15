@@ -31,6 +31,10 @@ K = int(T/dt)
 # Set seed for reproducibility
 np.random.seed(21)
 
+# Number of circles
+circles = 7
+# circles = 4
+
 # Velocity functions
 def u1(x,y): 
     return 1 + Q*x/(2*np.pi*(np.power(x,2)+np.power(y,2)))
@@ -61,21 +65,21 @@ def rw(K,X0,Y0,R):
            
     return finished,x_new,y_new,len(xs)
 
-R = [7,6,5,4,3,2,1] # vector of radius
-#iters = [100,100,100,100,100,100,100] # vector of iterations to perform for each level (TRIAL)
-#P_trials = [0.08,0.04875,0.01564103,0.00704918]
-#iters = 2*np.ones(len(R))/P_trials
-iters = [100,4,5,10,10,14,20]
+if circles == 7 :
+    R = [7,6,5,4,3,2,1] # vector of radius
+    #iters = [100,100,100,100,100,100,100] # vector of iterations to perform for each level (TRIAL)
+    #P_trials = [0.08,0.04875,0.01564103,0.00704918]
+    iters = [100,4,5,10,10,14,20] # vector of iterations to perform for each level
 
+if circles == 4 :
+    R = [7,5,3,1] # vector of radius
+    #iters = [100,100,100,100] # vector of iterations to perform for each level (TRIAL)
+    P_trials = [0.08,0.04875,0.01564103,0.00704918]
+    iters = [100,25,64,142]
 
-np.random.seed(21)
+np.random.seed(21) # set seed for reproducibility
 
-
-
-Rm = np.zeros(100,) # needed for variance calculation
-
-for n in range(100):
-    print('Iter n.:', n)
+def splitting():
     X_start = [X0]
     Y_start = [Y0]
     times = [0] # to store after how many steps we hit the inner ball
@@ -108,16 +112,24 @@ for n in range(100):
         Y_start = np.copy(Y_new)
         times = np.copy(times_new)
         #print('Finished Stage: ',i)
+        return counts[-1], np.prod(P)
 
-    Rm[n] = counts[-1]
+# Splitting
+_,out = splitting()
+print(out) # output    
+    
+# Variance Extimation
+N = 10    
+Rm = np.zeros(10,) # needed for variance calculation
+
+for n in range(N):
+    print('Iter n.:', n)
+    Rm[n],_ = splitting()
     print('Hits:', Rm[n])
     
-#print('Times of arrival: ')
-print(times_new)     
-print(np.prod(P)) # output
-my_den = iters[0]
+my_den = iters[0]**2
 for i in np.arange(1,len(R)):
     my_den = my_den * (iters[i]**2)
 variance = np.var(Rm)/my_den
 print('Variance: ', variance)
-print('7.64490306122449e-11')
+# print('7.64490306122449e-11')
