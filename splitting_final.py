@@ -8,6 +8,15 @@ Created on Thu Jan  6 08:06:44 2022
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import sys, os
+
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Restore
+def enablePrint():
+    sys.stdout = sys.__stdout__
 
 # Entrace in the circular crown with internal radius r and external radius R
 def entrance(x,y,R):
@@ -34,6 +43,10 @@ np.random.seed(21)
 # Number of circles
 circles = 7
 # circles = 4
+
+# Task
+task = 'extimation'
+# task = 'variance'
 
 # Velocity functions
 def u1(x,y): 
@@ -86,17 +99,17 @@ def splitting():
     P = np.zeros(len(R)) # vector to store probabilities
     counts = np.zeros(len(R))
     for i in range(len(R)): # for each level
-        #print("Level: ", i)
+        print("Level: ", i)
         its = int(iters[i]) # get how many iterations to perform for each valid starting point
-        #print("Iterations to perform: ", its)
+        print("Iterations to perform: ", its)
         den = its * len(X_start) # computing the denominator needed to divide P at the end: number of trials per starting point * number of starting points
         X_new = [] # I will store here the valid ending points found
         Y_new = [] 
         times_new = []
-        #print("Number of valid starting points: ", len(X_start))
+        print("Number of valid starting points: ", len(X_start))
         for j in range(len(X_start)): # for each starting point
             t_old = times[j] # time employed to reach the current starting point
-            # print('Times old: ', times[j])
+            print('Times old: ', times[j])
             for k in range(its): 
                 finished,x_new,y_new,temp_t = rw(K,X_start[j],Y_start[j],R[i]) # generate its time a trajectory starting from my starting point
                 t_new = temp_t + t_old                
@@ -105,31 +118,36 @@ def splitting():
                     Y_new.append(y_new)
                     times_new.append(t_new)
                     P[i] = P[i] + 1 # update counter
-        #print('Number of hits: ', int(P[i]))
+        print('Number of hits: ', int(P[i]))
         counts[i] = P[i]            
         P[i] = P[i]/den # count the fraction of successes
         X_start = np.copy(X_new) # valid ending points become the new starting points
         Y_start = np.copy(Y_new)
         times = np.copy(times_new)
-        #print('Finished Stage: ',i)
+        print('Finished Stage: ',i)
         return counts[-1], np.prod(P)
 
 # Splitting
-_,out = splitting()
-print(out) # output    
-    
-# Variance Extimation
-N = 10    
-Rm = np.zeros(10,) # needed for variance calculation
+if task == 'extimation' :
+    _,out = splitting()
+    print('Extimated probability: ', out)
 
-for n in range(N):
-    print('Iter n.:', n)
-    Rm[n],_ = splitting()
-    print('Hits:', Rm[n])
+# Variance Extimation
+if task == 'variance' :
+    N = 10    
+    Rm = np.zeros(10,) # needed for variance calculation
     
-my_den = iters[0]**2
-for i in np.arange(1,len(R)):
-    my_den = my_den * (iters[i]**2)
-variance = np.var(Rm)/my_den
-print('Variance: ', variance)
+    for n in range(N):
+        print('Iter n.:', n)
+        blockPrint()
+        Rm[n],_ = splitting()
+        enablePrint()
+        print('Hits:', Rm[n])
+        
+    my_den = iters[0]**2
+    for i in np.arange(1,len(R)):
+        my_den = my_den * (iters[i]**2)
+    variance = np.var(Rm)/my_den
+    print('Variance: ', variance)
+    
 # print('7.64490306122449e-11')
