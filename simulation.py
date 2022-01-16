@@ -8,6 +8,7 @@ Created on Fri Dec 24 16:10:12 2021
 """
 This file contains the code for the stochastic part of the first question of the assignment.
 We propose a two-stage Monte Carlo for the estimation of the desired quantity.
+Before launching the script, choose the task to perform: two stages MC or estimation of the order in time
 """
 
 #Package Loading
@@ -353,7 +354,7 @@ def res_path(N):
 if task == 'order':
     
     N = 10000 # Numer of replicas
-    mu_hat_fff, Z_mc_hat_fff, mu_hat_ff, Z_mc_hat_ff, mu_hat_f, Z_mc_hat_f, mu_hat_c, Z_mc_hat_c = res_path(N) # running N paths
+    mu_hat_fff, Z_mc_hat_fff, mu_hat_ff, Z_mc_hat_ff, mu_hat_f, Z_mc_hat_f, mu_hat_c, Z_mc_hat_c = res_path(N) # running N paths with the different resolutions
     
     end = time.time()
     
