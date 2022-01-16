@@ -9,6 +9,7 @@ Created on Fri Dec 24 17:35:26 2021
 This file contains the code to solve the second question of the assignment.
 The proposed solution for Variance Reduction relies on Antithetic Variables. 
 """
+
 # Package Loading
 import numpy as np
 import scipy.stats as st
