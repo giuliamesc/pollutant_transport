@@ -135,7 +135,7 @@ if task == 'twostagesMC':
     ax.set_aspect('equal', adjustable='box')
     
 # ORDER STUDY    
-# Producing N trajectories with three different refinements    
+# Producing N trajectories with three different refinements on the same Brownian Paths   
 
 def res_path(N):
     # Time discretizations
