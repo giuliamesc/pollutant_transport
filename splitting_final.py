@@ -10,8 +10,10 @@ import matplotlib.pyplot as plt
 import time
 import sys, os
 
+# Enable and disable print (for a cleaner output of variance method)
 # Disable
 def blockPrint():
+    sys.__stdout__ = sys.stdout
     sys.stdout = open(os.devnull, 'w')
 
 # Restore
@@ -41,12 +43,13 @@ K = int(T/dt)
 np.random.seed(21)
 
 # Number of circles
-circles = 7
-# circles = 4
+# circles = 7
+circles = 4
 
 # Task
-task = 'extimation'
-# task = 'variance'
+# task = 'FSextimation'
+# task = 'FSvariance'
+task = 'FEextimation'
 
 # Velocity functions
 def u1(x,y): 
@@ -55,8 +58,8 @@ def u2(x,y):
     return Q*y/(2*np.pi*(np.power(x,2)+np.power(y,2)))
 
 # Generates a trajectory starting from X0,Y0, which ends after K steps or when the circle of radius R is hit
-def rw(K,X0,Y0,R):
-    finished=0 # flag for the stop of the chain
+def subpath(K,X0,Y0,R):
+    finished = 0 # flag for the stop of the path
     x_new = X0 
     y_new = Y0
     xs = [X0] # storing the path - only for debugging, not necessary
@@ -73,7 +76,7 @@ def rw(K,X0,Y0,R):
         xs.append(x_new)
         ys.append(y_new)
         if (entrance(x_new,y_new,R)) : 
-            finished=1
+            finished = 1
             break; # exit from the for loop
            
     return finished,x_new,y_new,len(xs)
@@ -81,23 +84,23 @@ def rw(K,X0,Y0,R):
 if circles == 7 :
     R = [7,6,5,4,3,2,1] # vector of radius
     #iters = [100,100,100,100,100,100,100] # vector of iterations to perform for each level (TRIAL)
-    #P_trials = [0.08,0.04875,0.01564103,0.00704918]
     iters = [100,4,5,10,10,14,20] # vector of iterations to perform for each level
 
 if circles == 4 :
     R = [7,5,3,1] # vector of radius
     #iters = [100,100,100,100] # vector of iterations to perform for each level (TRIAL)
-    P_trials = [0.08,0.04875,0.01564103,0.00704918]
-    iters = [100,25,64,142]
+    # P_trials = [0.08,0.04875,0.01564103,0.00704918]
+    iters = [100,25,64,142] # vector of iterations to perform for each level
 
 np.random.seed(21) # set seed for reproducibility
 
-def splitting():
+def FSsplitting():
     X_start = [X0]
     Y_start = [Y0]
     times = [0] # to store after how many steps we hit the inner ball
     P = np.zeros(len(R)) # vector to store probabilities
     counts = np.zeros(len(R))
+    parents = [] # to store parents
     for i in range(len(R)): # for each level
         print("Level: ", i)
         its = int(iters[i]) # get how many iterations to perform for each valid starting point
@@ -106,12 +109,53 @@ def splitting():
         X_new = [] # I will store here the valid ending points found
         Y_new = [] 
         times_new = []
+        parents_new = []
         print("Number of valid starting points: ", len(X_start))
         for j in range(len(X_start)): # for each starting point
             t_old = times[j] # time employed to reach the current starting point
-            print('Times old: ', times[j])
+            if i > 0:
+                parents_old = parents[j]
             for k in range(its): 
-                finished,x_new,y_new,temp_t = rw(K,X_start[j],Y_start[j],R[i]) # generate its time a trajectory starting from my starting point
+                if i == 0 : 
+                    parents_old = k
+                finished,x_new,y_new,temp_t = subpath(K,X_start[j],Y_start[j],R[i]) # generate its time a trajectory starting from my starting point
+                t_new = temp_t + t_old                
+                if finished == 1 and t_new <= K :
+                    X_new.append(x_new) # store the new initial position
+                    Y_new.append(y_new)
+                    times_new.append(t_new)
+                    parents_new.append(parents_old)
+                    P[i] = P[i] + 1 # update counter
+        print('Number of hits: ', int(P[i]))
+        counts[i] = P[i]            
+        P[i] = P[i]/den # count the fraction of successes
+        X_start = np.copy(X_new) # valid ending points become the new starting points
+        Y_start = np.copy(Y_new)
+        times = np.copy(times_new)
+        parents = np.copy(parents_new)
+        print('Finished Stage: ',i)
+    return counts[-1], np.prod(P), parents
+
+def FEsplitting(N):
+    X_start = [X0]
+    Y_start = [Y0]
+    times = [0] # to store after how many steps we hit the inner ball
+    P = np.zeros(len(R)) # vector to store probabilities
+    counts = np.zeros(len(R))
+    for i in range(len(R)): # for each level
+        print("Level: ", i)
+        its =  int(N[i] / len(X_start))
+        print("Iterations to perform: ", its)
+        den = its * len(X_start) # computing the denominator needed to divide P at the end: number of trials per starting point * number of starting points
+        X_new = [] # I will store here the valid ending points found
+        Y_new = [] 
+        times_new = []
+        print("Number of valid starting points: ", len(X_start))
+        for j in range(len(X_start)): # for each starting point
+            t_old = times[j] # time employed to reach the current starting point
+            # print('Times old: ', times[j])
+            for k in range(its): 
+                finished,x_new,y_new,temp_t = subpath(K,X_start[j],Y_start[j],R[i]) # generate its time a trajectory starting from my starting point
                 t_new = temp_t + t_old                
                 if finished == 1 and t_new <= K :
                     X_new.append(x_new) # store the new initial position
@@ -125,29 +169,52 @@ def splitting():
         Y_start = np.copy(Y_new)
         times = np.copy(times_new)
         print('Finished Stage: ',i)
-        return counts[-1], np.prod(P)
+    return counts[-1], np.prod(P)
 
 # Splitting
-if task == 'extimation' :
-    _,out = splitting()
+if task == 'FSextimation' :
+    _,out,_ = FSsplitting()
     print('Extimated probability: ', out)
 
 # Variance Extimation
-if task == 'variance' :
-    N = 10    
-    Rm = np.zeros(10,) # needed for variance calculation
+if task == 'FSvariance' :
     
-    for n in range(N):
-        print('Iter n.:', n)
-        blockPrint()
-        Rm[n],_ = splitting()
-        enablePrint()
-        print('Hits:', Rm[n])
+    method = 'Y1'
+    # method = 'Rm'
+    
+    if method == 'Y1':
+        my_den = iters[0]
+        for i in np.arange(1,len(R)):
+            my_den = my_den * (iters[i]**2)
+        _,_,pars = FSsplitting()
+        counts = [(i,list(pars).count(i)) for i in set(pars)]
+        hits = np.zeros(iters[0])
+        for i in range(len(counts)):
+            hits[counts[i][0]] = counts[i][1]
         
-    my_den = iters[0]**2
-    for i in np.arange(1,len(R)):
-        my_den = my_den * (iters[i]**2)
-    variance = np.var(Rm)/my_den
+        variance = np.var(hits)/my_den
+        
+    if method == 'Rm':
+        N = 100
+        Rm = np.zeros(N,) # needed for variance calculation
+        for n in range(N):
+            print('Iter n.:', n)
+            blockPrint()
+            Rm[n],_ = FSsplitting()
+            enablePrint()
+            print('Hits:', Rm[n])
+            my_den = iters[0]**2
+        for i in np.arange(1,len(R)):
+            my_den = my_den * (iters[i]**2)
+        variance = np.var(Rm)/my_den
+
     print('Variance: ', variance)
+    print('Standard Deviation: ', np.sqrt(variance))
+
+if task == 'FEextimation' :
+    N_fe = 1000*np.ones(len(R))
+    _,out = FEsplitting(N_fe)
+    print('Extimated probability: ', out)
+    
     
 # print('7.64490306122449e-11')

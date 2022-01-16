@@ -6,7 +6,7 @@ Created on Fri Dec 24 16:57:16 2021
 """
 
 # Parameters file
-testcase = 1
+testcase = 2
 
 if testcase == 1:
     # Starting point

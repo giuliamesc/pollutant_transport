@@ -155,6 +155,8 @@ def res_path(N):
     Z_mc_fff = np.zeros([N,])
     
     for i in range(N): 
+        if np.mod(i,50) == 0:
+            print('Iter n. ', i)
         # Starting values
         X0_fff = parameters.X0
         Y0_fff = parameters.Y0
