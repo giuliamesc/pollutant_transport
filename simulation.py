@@ -138,7 +138,7 @@ if task == 'twostagesMC':
 # ORDER STUDY    
 # Producing N trajectories with three different refinements on the same Brownian Paths   
 
-def res_path(N):
+def ref_path(N):
     # Time discretizations
     dt_c = 1e-2
     dt_f = dt_c/2
@@ -354,7 +354,7 @@ def res_path(N):
 if task == 'order':
     
     N = 10000 # Numer of replicas
-    mu_hat_fff, Z_mc_hat_fff, mu_hat_ff, Z_mc_hat_ff, mu_hat_f, Z_mc_hat_f, mu_hat_c, Z_mc_hat_c = res_path(N) # running N paths with the different resolutions
+    mu_hat_fff, Z_mc_hat_fff, mu_hat_ff, Z_mc_hat_ff, mu_hat_f, Z_mc_hat_f, mu_hat_c, Z_mc_hat_c = ref_path(N) # running N paths with the different resolutions
     
     end = time.time()
     
