@@ -13,7 +13,9 @@ Select the task you want to perform between `twostagesMC` and `order` at the beg
   - `FSextimation`, i.e. estimating the probability of the rare event with *Fixed Splitting* method.
   - `FSvariance`, i.e. studying the variance of the *Fixed Splitting* estimator. You can choose between two methods:
     - `Y1`, which computes the sample variance of the number of hits caused by the offspring of the various paths starting from (X_0,Y_0).
-    - `R_m`, which repeats N = 100 times the algorithm and outputs the variance of the number of hits of the well. *Be careful!* this option requires long computational time, and we advise you to disable printing before running it.   
+    - `R_m`, which repeats N = 100 times the algorithm and outputs the variance of the number of hits of the well. 
+     
+     :warning: *Be careful!* this option requires long computational time, and we advise you to disable printing before running it.   
   - `FEextimation`, i.e. estimating the probability of the rare event with *Fixed Effort* method.
 ## Author
 👻 Giulia Mescolini [@giuliamesc](https://github.com/giuliamesc)
