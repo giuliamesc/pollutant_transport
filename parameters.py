@@ -51,7 +51,7 @@ if testcase == 4:
 if testcase == 5:
     # Starting point
     X0 = 7
-    Y0 = 8
+    Y0 = 7
     # Plot limits
     xl = 10
     yl = 10
