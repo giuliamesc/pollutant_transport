@@ -18,8 +18,8 @@ import parameters
 import time
 
 # Task
-# task = 'twostagesMC'
-task = 'order'
+task = 'twostagesMC'
+# task = 'order'
 
 # Options
 r = 1.0 # radius of the well
@@ -155,7 +155,7 @@ def res_path(N):
     Z_mc_fff = np.zeros([N,])
     
     for i in range(N): 
-        if np.mod(i,50) == 0:
+        if np.mod(i,1000) == 0:
             print('Iter n. ', i)
         # Starting values
         X0_fff = parameters.X0
@@ -352,7 +352,7 @@ def res_path(N):
 
 if task == 'order':
     
-    N = 100000 # Numer of replicas
+    N = 10000 # Numer of replicas
     mu_hat_fff, Z_mc_hat_fff, mu_hat_ff, Z_mc_hat_ff, mu_hat_f, Z_mc_hat_f, mu_hat_c, Z_mc_hat_c = res_path(N) # running N paths
     
     end = time.time()
@@ -360,7 +360,7 @@ if task == 'order':
     print("Simulation time: ", end - start, "s; in minutes: ",(end-start)/60)
     
     # Variances
-    sigma_hat_fff = np.var(Z_mc_hat_ff)
+    sigma_hat_fff = np.var(Z_mc_hat_fff)
     sigma_hat_ff = np.var(Z_mc_hat_ff)
     sigma_hat_c = np.var(Z_mc_hat_c) 
     sigma_hat_f = np.var(Z_mc_hat_f)    
