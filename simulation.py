@@ -19,8 +19,8 @@ import parameters
 import time
 
 # Task
-task = 'twostagesMC'
-# task = 'order'
+# task = 'twostagesMC'
+task = 'order'
 
 # Options
 r = 1.0 # radius of the well
@@ -197,7 +197,6 @@ def ref_path(N):
             # Generating the Brownian path for the finest path
             W1_fff = np.sqrt(dt_fff)*np.float(np.random.normal(size = 1))
             W2_fff = np.sqrt(dt_fff)*np.float(np.random.normal(size = 1))
-            
             # Accumulation the brownian path for the other two resolutions
             W1_ff = W1_ff + W1_fff
             W2_ff = W2_ff + W2_fff
@@ -225,95 +224,17 @@ def ref_path(N):
             X0_fff = new_X_fff
             Y0_fff = new_Y_fff
             
-             # SECOND FINEST PATH: update it every two iterations
+            # SECOND FINEST PATH: update it every two iterations
             if np.mod(it,2) == 0 :
-                
-                # Computation of the following position 
-                new_X_ff = X0_ff + u1(X0_ff,Y0_ff)*dt_ff + sigma * W1_ff
-                new_Y_ff = Y0_ff + u2(X0_ff,Y0_ff)*dt_ff + sigma * W2_ff
-                
-                # Storage of the position
-                X_ff.append(new_X_ff)
-                Y_ff.append(new_Y_ff)
-                
-                # Updating the position
-                X0_ff = new_X_ff
-                Y0_ff = new_Y_ff
-                
-                W1_ff = 0 # cleaning W_f for the next iteration
-                W2_ff = 0 # cleaning W_f for the next iteration
-            else : # do not update, just store
-                new_X_ff = X0_ff
-                new_Y_ff = Y0_ff
-                X_ff.append(new_X_ff)
-                Y_ff.append(new_Y_ff)
-                
-            # Checking whether the well is hit    
-            if (killing_boundary(new_X_ff,new_Y_ff)) : 
-                if stop_ff == False:
-                    stop_ff = True
-                    count_ff = count_ff + 1
-                    Z_mc_ff[i] = 1
+                X_ff,Y_ff,W1_ff,W2_ff,stop_ff,count_ff,Z_mc_ff = coarse_update(X_ff,Y_ff,dt_ff,W1_ff,W2_ff,stop_ff,count_ff,Z_mc_ff,i)
             
             # MEDIUM-FINE PATH: update it every four iterations
             if np.mod(it,4) == 0 :
-                
-                # Computation of the following position 
-                new_X_f = X0_f + u1(X0_f,Y0_f)*dt_f + sigma * W1_f
-                new_Y_f = Y0_f + u2(X0_f,Y0_f)*dt_f + sigma * W2_f
-                
-                # Storage of the position
-                X_f.append(new_X_f)
-                Y_f.append(new_Y_f)
-                
-                # Updating the position
-                X0_f = new_X_f
-                Y0_f = new_Y_f
-                
-                W1_f = 0 # cleaning W_f for the next iteration
-                W2_f = 0 # cleaning W_f for the next iteration
-            else : # do not update, just store
-                new_X_f = X0_f
-                new_Y_f = Y0_f
-                X_f.append(new_X_f)
-                Y_f.append(new_Y_f)
-                
-            # Checking whether the well is hit    
-            if (killing_boundary(new_X_f,new_Y_f)) : 
-                if stop_f == False:
-                    stop_f = True
-                    count_f = count_f + 1
-                    Z_mc_f[i] = 1
+               X_f,Y_f,W1_f,W2_f,stop_f,count_f,Z_mc_f = coarse_update(X_f,Y_f,dt_f,W1_f,W2_f,stop_f,count_f,Z_mc_f,i)
                     
             # COARSE PATH: update it every eight iterations
             if np.mod(it,8) == 0 :
-                
-                # Computation of the following position 
-                new_X_c = X0_c + u1(X0_c,Y0_c)*dt_c + sigma * W1_c
-                new_Y_c = Y0_c + u2(X0_c,Y0_c)*dt_c + sigma * W2_c
-                
-                # Storage of the position
-                X_c.append(new_X_c)
-                Y_c.append(new_Y_c)
-                
-                # Updating the position
-                X0_c = new_X_c
-                Y0_c = new_Y_c
-                
-                W1_c = 0 # cleaning W_c for the next iteration
-                W2_c = 0 # cleaning W_c for the next iteration
-            else : # do not update, just store
-                new_X_c = X0_c
-                new_Y_c = Y0_c
-                X_c.append(new_X_c)
-                Y_c.append(new_Y_c)
-            
-            # Checking whether the well is hit   
-            if (killing_boundary(new_X_c,new_Y_c)) : 
-                if stop_c == False:
-                    stop_c = True
-                    count_c = count_c + 1
-                    Z_mc_c[i] = 1
+                X_c,Y_c,W1_c,W2_c,stop_c,count_c,Z_mc_c = coarse_update(X_c,Y_c,dt_c,W1_c,W2_c,stop_c,count_c,Z_mc_c,i)
                         
             # Checking wheter time limit T is reached
             if (it > int(T/dt_fff)) : 
@@ -350,6 +271,24 @@ def ref_path(N):
             
     return count_fff/N, Z_mc_fff, count_ff/N, Z_mc_ff, count_f/N, Z_mc_f, count_c/N, Z_mc_c
 
+def coarse_update(X_c,Y_c,dt_c,W1_c,W2_c,stop_c,count_c,Z_mc_c,i):
+    # Computation of the following position 
+    new_X_c = X_c[-1] + u1(X_c[-1],Y_c[-1])*dt_c + sigma * W1_c
+    new_Y_c = Y_c[-1] + u2(X_c[-1],Y_c[-1])*dt_c + sigma * W2_c
+                
+    # Storage of the position
+    X_c.append(new_X_c)
+    Y_c.append(new_Y_c)
+                
+    W1_c = 0 # cleaning W_f for the next iteration
+    W2_c = 0 # cleaning W_f for the next iteration   
+    # Checking whether the well is hit    
+    if (killing_boundary(new_X_c,new_Y_c)) : 
+        if stop_c == False:
+            stop_c = True
+            count_c = count_c + 1
+            Z_mc_c[i] = 1
+    return X_c,Y_c,W1_c,W2_c,stop_c,count_c,Z_mc_c
 
 if task == 'order':
     
