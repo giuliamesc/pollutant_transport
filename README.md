@@ -17,5 +17,10 @@ Select the task you want to perform between `twostagesMC` and `order` at the beg
      
      :warning: *Be careful!* this option requires long computational time, and we advise you to disable printing before running it.   
   - `FEextimation`, i.e. estimating the probability of the rare event with *Fixed Effort* method.
+- Folder `Plots` containing:
+  - `plots_initial.py`, producing a plot of the starting points analyzed.
+  - `order_plots.m`, `MATLAB` script producing a logarithmic plot of the error trend with respect to time discretization.
+- Folder `Docs`, containing the assignment text, the two sources exploited and the report.
+
 ## Author
 👻 Giulia Mescolini [@giuliamesc](https://github.com/giuliamesc)
