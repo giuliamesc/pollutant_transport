@@ -19,8 +19,8 @@ import parameters
 import time
 
 # Task
-# task = 'twostagesMC'
-task = 'order'
+task = 'twostagesMC'
+# task = 'order'
 
 # Options
 r = 1.0 # radius of the well
@@ -93,7 +93,7 @@ if task == 'twostagesMC':
     N = 1000 # N for pilot run
     dt = 1e-2 # temporal step for discretization
     mu_hat, X, Y, Z_mc_hat = path(N) # running N paths
-    sigma_hat = np.var(Z_mc_hat) # computing empirical variance
+    sigma_hat = np.var(Z_mc_hat, ddof = 1) # computing empirical variance with the unbiased estimator
     new_N = int(np.ceil(C_alpha**2*sigma_hat/(tol/2)**2)) # computing the new N
     
     print('Variance with old N: ', sigma_hat)
@@ -101,7 +101,7 @@ if task == 'twostagesMC':
     print('New N: ', new_N)
     
     mu, X, Y, Z_mc = path(new_N) # running new_N paths
-    sigma_new = np.var(Z_mc) # computing new variance
+    sigma_new = np.var(Z_mc, ddof = 1) # computing new variance with the unbiased estimator
     
     print('Variance with new N: ', sigma_new)
     print('Extimated probability: ', mu)
@@ -111,7 +111,9 @@ if task == 'twostagesMC':
         print('Done')
     else:
         print('Update N again')
-    
+        new_N = int(np.ceil(C_alpha**2*sigma_new/(tol/2)**2)) # computing the new N
+        print('New N: ', new_N)
+        
     end = time.time()
     
     print("Simulation time: ", end - start, "s; in minutes: ",(end-start)/60) 
@@ -271,7 +273,9 @@ def ref_path(N):
             
     return count_fff/N, Z_mc_fff, count_ff/N, Z_mc_ff, count_f/N, Z_mc_f, count_c/N, Z_mc_c
 
+# Function updating coarser paths
 def coarse_update(X_c,Y_c,dt_c,W1_c,W2_c,stop_c,count_c,Z_mc_c,i):
+    
     # Computation of the following position 
     new_X_c = X_c[-1] + u1(X_c[-1],Y_c[-1])*dt_c + sigma * W1_c
     new_Y_c = Y_c[-1] + u2(X_c[-1],Y_c[-1])*dt_c + sigma * W2_c
@@ -281,7 +285,8 @@ def coarse_update(X_c,Y_c,dt_c,W1_c,W2_c,stop_c,count_c,Z_mc_c,i):
     Y_c.append(new_Y_c)
                 
     W1_c = 0 # cleaning W_f for the next iteration
-    W2_c = 0 # cleaning W_f for the next iteration   
+    W2_c = 0 # cleaning W_f for the next iteration
+    
     # Checking whether the well is hit    
     if (killing_boundary(new_X_c,new_Y_c)) : 
         if stop_c == False:
@@ -300,10 +305,10 @@ if task == 'order':
     print("Simulation time: ", end - start, "s; in minutes: ",(end-start)/60)
     
     # Variances
-    sigma_hat_fff = np.var(Z_mc_hat_fff)
-    sigma_hat_ff = np.var(Z_mc_hat_ff)
-    sigma_hat_c = np.var(Z_mc_hat_c) 
-    sigma_hat_f = np.var(Z_mc_hat_f)    
+    sigma_hat_fff = np.var(Z_mc_hat_fff, ddof = 1)
+    sigma_hat_ff = np.var(Z_mc_hat_ff, ddof = 1)
+    sigma_hat_c = np.var(Z_mc_hat_c, ddof = 1) 
+    sigma_hat_f = np.var(Z_mc_hat_f, ddof = 1)    
     
     # Extimated values and variances
     print('dt = 1.25e-3: mu_hat = ', mu_hat_fff, 'sigma_hat = ', sigma_hat_fff)
