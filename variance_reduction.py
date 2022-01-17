@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 
 # Options and parameters
-N = 31398 # number of samples: same as in the previous point 
+N = 31430 # number of samples: same as in the previous point 
 N2 = int(N/2) # number of samples for AV
 dt = 1e-2 # time discretization step
 T = 1 # time limit
@@ -115,7 +115,7 @@ for i in range(int(N)):
     Z_mc[i],_,_,_,_,_ = paths(K)
 
 mean_cmc=np.mean(Z_mc) # esitmate of CMC
-var_cmc=np.var(Z_mc) # variance of CMC
+var_cmc=np.var(Z_mc, ddof = 1) # variance of CMC
 print('Variance CMC: ', var_cmc)
 ci_cmc=C_alpha*np.sqrt(var_cmc)/np.sqrt(N) # semilength of confidence interval
 
@@ -125,10 +125,11 @@ for i in range(int(N2)):
     
 Y_av = 0.5*(Z_mc2+Z_av) # variance of AV
 mean_av=np.mean(Y_av) # estimate of AV
-print('Variance AV: ', np.var(Y_av))
+var_av = np.var(Y_av, ddof = 1)
+print('Variance AV: ', var_av)
 C=np.cov(Z_mc2,Z_av) # covariance between Z and Z_av -- NEGATIVE
 print('Covariance: ', C)
-ci_av=C_alpha*np.sqrt((np.sum(C))/(2*N)) # semilength of confidence interval
+ci_av=C_alpha*np.sqrt(var_av/N2) # semilength of confidence interval
 
 print('Estimate MC '+str(mean_cmc)+' +- '+str(round(ci_cmc,5)))
 print('Estimate AV '+str(mean_av)+' +- '+str(round(ci_av,5)))
