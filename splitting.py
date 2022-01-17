@@ -13,9 +13,6 @@ Before launching the script, choose the task to perform and the number of circul
 
 # Package Loading
 import numpy as np
-import matplotlib.pyplot as plt
-import time
-import sys, os
 
 # Entrace in the circular crown with internal radius r and external radius R
 def entrance(x,y,R):
@@ -167,7 +164,7 @@ if task == 'FSvariance' :
         for i in range(len(counts)):
             hits[counts[i][0]] = counts[i][1]
         # Variance computation
-        variance = np.var(hits)/my_den
+        variance = np.var(hits,ddof=1)/my_den
         
     if method == 'Rm':
         N = 100
@@ -182,7 +179,7 @@ if task == 'FSvariance' :
         for i in np.arange(1,len(R)):
             my_den = my_den * (iters[i]**2)
         # Variance computation    
-        variance = np.var(Rm)/my_den
+        variance = np.var(Rm, ddof = 1)/my_den
 
     print('Variance: ', variance)
     print('Standard Deviation: ', np.sqrt(variance))
