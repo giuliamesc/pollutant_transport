@@ -36,7 +36,7 @@ if testcase == 3:
     xl = 7
     yl = 7
     # Tolerance
-    tol = 1e-3
+    tol = 1e-4
     
 if testcase == 4:
     # Starting point
@@ -46,7 +46,7 @@ if testcase == 4:
     xl = 3
     yl = 3
     # Tolerance
-    tol = 1e-4
+    tol = 1e-2
     
 if testcase == 5:
     # Starting point
