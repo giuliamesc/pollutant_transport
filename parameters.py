@@ -5,7 +5,10 @@ Created on Fri Dec 24 16:57:16 2021
 @author: giuli
 """
 
-# Parameters file
+"""
+Parameters file: choose here the starting point to test
+"""
+# CHOOSE HERE THE STARTING POINT
 testcase = 2
 
 if testcase == 1:
