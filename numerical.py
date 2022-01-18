@@ -45,7 +45,7 @@ meshio.write("meshio_mesh.msh", meshio_mesh)
 # Data Storage for visualization in ParaView
 def save_output(u, t, it):
     u.rename('u', 'u')
-    xdmf_file = df.XDMFFile('data/100times/unsteady_%05d.xdmf' % it)
+    xdmf_file = df.XDMFFile('data/100times/time_%05d.xdmf' % it)
     xdmf_file.parameters['flush_output'] = True
     xdmf_file.parameters['functions_share_mesh'] = True
     xdmf_file.parameters['rewrite_function_mesh'] = False
@@ -56,7 +56,8 @@ V = df.FunctionSpace(mesh,"Lagrange",1)
 
 # BCs
 bcs = list()
-      
+
+# Boundary Definition      
 def my_well(x,on_boundary):
         rad = np.sqrt(np.power(x[0],2)+np.power(x[1],2))
         return on_boundary and (np.abs(rad - r) < tol_int)
@@ -64,7 +65,8 @@ def my_well(x,on_boundary):
 def my_out(x,on_boundary):
         rad = np.sqrt(np.power(x[0],2)+np.power(x[1],2))
         return on_boundary and (np.abs(rad - R) < tol_ext)
-
+    
+# Dirichlet Boundary Conditions
 bcs.append(df.DirichletBC(V, df.Constant(1), my_well))
 bcs.append(df.DirichletBC(V, df.Constant(0), my_out))
 
@@ -89,9 +91,8 @@ for i in range(1, len(times)):
     if(np.mod(i,10)==0):
         print('*** Solving time t = %1.6f ***' % t)
     print(np.array(phi_old(X0,Y0)))
-    # Bilinear form
+    # Bilinear form and right-hand side
     F = (- phi*v - df.Constant(dt) * df.Constant(sigma**2/2) * df.inner(df.grad(phi), df.grad(v)) + df.Constant(dt) * (df.inner(df.as_vector((u1,u2)), df.nabla_grad(phi)))*v + phi_old * v ) * df.dx
-    # Right-hand side
     a, rhs = df.lhs(F), df.rhs(F)
     # Solver
     df.solve(a == rhs, phi_old, bcs=bcs)
