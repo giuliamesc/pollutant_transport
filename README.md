@@ -20,7 +20,7 @@ Select the task you want to perform between `twostagesMC` and `order` at the beg
 - Folder `Plots` containing:
   - `plots_initial.py`, producing a plot of the starting points analyzed.
   - `order_plots.m`, `MATLAB` script producing a logarithmic plot of the error trend with respect to time discretization.
-- Folder `Docs`, containing the assignment text, the two sources exploited and the report.
+- Folder `Docs`, containing the assignment text, the sources exploited and the report.
 
 ## Author
 👻 Giulia Mescolini [@giuliamesc](https://github.com/giuliamesc)
